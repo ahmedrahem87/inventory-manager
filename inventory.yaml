@@ -1,0 +1,23 @@
+devices:
+- groups:
+  - A
+  ip: 192.168.127.11
+  name: router1
+  password: adamsand
+  platform: cisco_ios
+  username: adam
+- groups:
+  - A
+  ip: 192.168.127.12
+  name: router2
+  platform: cisco_ios
+- groups:
+  - A
+  ip: 192.168.127.13
+  name: router3
+  platform: cisco_ios
+- groups:
+  - A
+  ip: 192.168.127.15
+  name: router4
+  platform: cisco_ios

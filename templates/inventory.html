@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head><title>Inventory</title></head>
+<body>
+  <h2>Device Inventory</h2>
+
+  <form method="POST" action="{{ url_for('add_device') }}">
+    <h3>Add New Device</h3>
+    Name: <input name="name" required><br>
+    IP: <input name="ip" required><br>
+    Platform: <input name="platform" required><br>
+    Groups (comma-separated): <input name="groups"><br>
+    <input type="submit" value="Add Device">
+  </form>
+
+  <h3>Devices</h3>
+  <ul>
+    {% for device in inventory %}
+      <li>
+        <b>{{ device.name }}</b> - {{ device.ip }} ({{ device.platform }}) - Groups: {{ device.groups }}
+        <form method="POST" action="{{ url_for('delete_device', device_name=device.name) }}" style="display:inline;">
+          <button type="submit">Delete</button>
+        </form>
+        <a href="{{ url_for('edit_device', device_name=device.name) }}">Edit</a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <a href="{{ url_for('logout') }}">Logout</a>
+
+  {% with messages = get_flashed_messages() %}
+    {% for msg in messages %}<p style="color:green;">{{ msg }}</p>{% endfor %}
+  {% endwith %}
+</body>
+</html>
+

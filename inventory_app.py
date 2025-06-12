@@ -1,0 +1,161 @@
+from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
+from datetime import timedelta
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user
+from werkzeug.security import generate_password_hash, check_password_hash
+import yaml
+import os
+import subprocess
+import requests
+
+app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'  # Change this in production
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+INVENTORY_FILE = 'inventory.yaml'
+EXPORT_DIR = './exports'
+
+class User(UserMixin):
+    def __init__(self, id):
+        self.id = id
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
+users = {
+    'admin': generate_password_hash('admin'),
+    'adam': generate_password_hash('adamsand')
+    }
+app.permanent_session_lifetime = timedelta(minutes=10)
+# ----------------------------- ROUTES ----------------------------------
+@app.route('/')
+def home():
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if username in users and check_password_hash(users[username], password):
+            user = User(username)  # Create User object
+            login_user(user)       # Log in the user using Flask-Login
+            session.permanent = True
+            session['user'] = username
+            return redirect(url_for('dashboard'))
+        flash('Invalid credentials')
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    query = request.args.get('query', '').strip().lower()
+
+    if os.path.exists(INVENTORY_FILE):
+        with open(INVENTORY_FILE) as f:
+            data = yaml.safe_load(f)
+    else:
+        data = {'devices': []}
+
+    devices = data.get('devices', [])
+
+    if query:
+        devices = [
+            device for device in devices
+            if query in device['name'].lower() or query in device['ip']
+        ]
+
+    return render_template('dashboard.html', devices=devices)
+
+
+@app.route('/add_device', methods=['POST'])
+@login_required
+def add_device():
+    device = {
+        'name': request.form['name'],
+        'ip': request.form['ip'],
+        'platform': request.form['platform'],
+        'groups': request.form['groups'].split(',')
+    }
+    data = load_inventory()
+    data['devices'].append(device)
+    save_inventory(data)
+    flash('Device added successfully')
+    return redirect(url_for('dashboard'))
+
+@app.route('/remove_devices', methods=['POST'])
+@login_required
+def remove_devices():
+    selected_names = request.form.getlist('device_names')
+
+    if os.path.exists(INVENTORY_FILE):
+        with open(INVENTORY_FILE) as f:
+            data = yaml.safe_load(f)
+    else:
+        data = {'devices': []}
+
+    data['devices'] = [device for device in data['devices'] if device['name'] not in selected_names]
+
+    with open(INVENTORY_FILE, 'w') as f:
+        yaml.dump(data, f)
+
+    export_to_ansible(data)
+    export_to_prometheus(data)
+
+    flash(f'Removed {len(selected_names)} device(s) successfully.')
+    return redirect(url_for('dashboard'))
+
+
+# ----------------------------- HELPERS ----------------------------------
+def load_inventory():
+    if os.path.exists(INVENTORY_FILE):
+        with open(INVENTORY_FILE) as f:
+            return yaml.safe_load(f) or {'devices': []}
+    return {'devices': []}
+
+def save_inventory(data):
+    with open(INVENTORY_FILE, 'w') as f:
+        yaml.dump(data, f)
+    export_to_ansible(data)
+    export_to_prometheus(data)
+
+def export_to_ansible(data):
+    ansible_data = {'all': {'hosts': {}, 'children': {}}}
+    for d in data['devices']:
+        ansible_data['all']['hosts'][d['name']] = {
+            'ansible_host': d['ip'],
+            'ansible_user': 'admin',
+            'ansible_password': 'admin',
+            'ansible_network_os': d['platform']
+        }
+        for group in d.get('groups', []):
+            ansible_data['all']['children'].setdefault(group, {'hosts': {}})['hosts'][d['name']] = None
+
+    os.makedirs(EXPORT_DIR, exist_ok=True)
+    with open(os.path.join(EXPORT_DIR, 'ansible_hosts.yml'), 'w') as f:
+        yaml.dump(ansible_data, f)
+
+def export_to_prometheus(data):
+    targets = [{'targets': [d['ip']], 'labels': {'hostname': d['name']}} for d in data['devices']]
+    os.makedirs(EXPORT_DIR, exist_ok=True)
+    export_path = os.path.join(EXPORT_DIR, 'snmp_targets.yml')
+    with open(export_path, 'w') as f:
+        yaml.dump(targets, f)
+    try:
+        subprocess.run(['/usr/bin/cp', export_path, '/etc/prometheus/snmp_targets.yml'], check=True)
+        r = subprocess.run(['curl', '-X', 'POST', 'http://localhost:9090/-/reload'], check=True)
+        print(f"Prometheus reload response: {r.status_code} - {r.text}")
+    except Exception as e:
+        print(f"Prometheus reload failed: {e}")
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5001, debug=True)
+
