@@ -3,9 +3,9 @@ devices:
   - A
   ip: 192.168.127.11
   name: router1
-  password: adamsand
+  password: admin
   platform: cisco_ios
-  username: adam
+  username: admin
 - groups:
   - A
   ip: 192.168.127.12
