@@ -1,0 +1,33 @@
+<h3>Link Down Duration Report</h3>
+<form method="POST">
+    <div class="mb-3">
+        <label>Device</label>
+        <select name="device" class="form-select" required>
+            {% for dev in devices %}
+            <option value="{{ dev }}">{{ dev }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Start Date</label>
+        <input type="datetime-local" name="start" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>End Date</label>
+        <input type="datetime-local" name="end" class="form-control" required>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Get Report</button>
+</form>
+
+{% if data %}
+    <hr>
+    <h5>Down Events</h5>
+    <pre class="bg-dark text-light p-3">{{ data | tojson(indent=2) }}</pre>
+
+    <form method="POST" action="{{ url_for('download_link_report') }}">
+        <input type="hidden" name="report_data" value="{{ data | tojson }}">
+        <button class="btn btn-success mt-2">Download PDF</button>
+    </form>
+{% endif %}

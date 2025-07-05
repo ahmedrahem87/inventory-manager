@@ -1,31 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Edit Device</title>
+    <title>Edit Device</title>
 </head>
 <body>
-  <h2>Edit Device: {{ device.name }}</h2>
+    <h2>Edit Device - {{ device.name }}</h2>
+    <form method="post">
+        <label>IP:</label><br>
+        <input type="text" name="ip" value="{{ device.ip }}" required><br><br>
 
-  <form method="POST">
-    <label>IP:</label>
-    <input name="ip" value="{{ device.ip }}" required><br>
+        <label>Platform:</label><br>
+        <input type="text" name="platform" value="{{ device.platform }}" required><br><br>
 
-    <label>Platform:</label>
-    <input name="platform" value="{{ device.platform }}" required><br>
+        <label>Groups (comma-separated):</label><br>
+        <input type="text" name="groups" value="{{ device.groups | join(',') }}" required><br><br>
 
-    <label>Groups (comma-separated):</label>
-    <input name="groups" value="{{ device.groups | join(',') }}"><br>
-
-    <input type="submit" value="Update Device">
-  </form>
-
-  <p><a href="{{ url_for('inventory') }}">Back to Inventory</a></p>
-
-  {% with messages = get_flashed_messages() %}
-    {% for msg in messages %}
-      <p style="color:green;">{{ msg }}</p>
-    {% endfor %}
-  {% endwith %}
+        <button type="submit">Update</button>
+        <a href="{{ url_for('dashboard') }}">Cancel</a>
+    </form>
 </body>
 </html>
 

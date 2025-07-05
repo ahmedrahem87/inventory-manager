@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Router Backups</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #eef; padding: 20px; }
+    h2 { margin-bottom: 20px; }
+    .date-header {
+      background: #007BFF; color: white; padding: 10px; cursor: pointer;
+      margin-bottom: 5px; border-radius: 4px;
+    }
+    .file-list {
+      margin-left: 20px;
+      display: none;
+    }
+    .file-link {
+      display: block; padding: 5px 10px; background: white;
+      border: 1px solid #ccc; margin-bottom: 3px; border-radius: 4px;
+      text-decoration: none; color: #333;
+    }
+    .file-link:hover {
+      background-color: #f0f0f0;
+    }
+    .back-btn {
+      margin-top: 20px;
+      display: inline-block;
+      padding: 8px 14px;
+      background-color: #007BFF;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Backup Files</h2>
+  {% for backup in backup_files %}
+    <div class="date-header" onclick="toggleFiles('{{ backup.date }}')">
+      {{ backup.date }}
+    </div>
+    <div class="file-list" id="{{ backup.date }}">
+      {% for file in backup.files %}
+        <a class="file-link" href="{{ url_for('view_backup_content', date=backup.date, filename=file) }}" target="_blank">
+          {{ file }}
+        </a>
+      {% endfor %}
+    </div>
+  {% endfor %}
+  <a href="{{ url_for('dashboard') }}" class="back-btn">← Back to Dashboard</a>
+
+  <script>
+    function toggleFiles(id) {
+      const section = document.getElementById(id);
+      section.style.display = section.style.display === 'none' ? 'block' : 'none';
+    }
+  </script>
+</body>
+</html>
+
