@@ -1,16 +1,48 @@
 - labels:
-    hostname: router1
+    hostname: SKENIA1-NE0541
   targets:
-  - 192.168.127.11
+  - 10.10.80.42
 - labels:
-    hostname: router2
+    hostname: SAODIA-NE0533
   targets:
-  - 192.168.127.12
+  - 10.10.80.18
 - labels:
-    hostname: router3
+    hostname: ALTHUR1-NE0353
   targets:
-  - 192.168.127.13
+  - 10.10.80.74
 - labels:
-    hostname: router4
+    hostname: DAWRBGD-NE0359
   targets:
-  - 192.168.127.15
+  - 10.10.80.96
+- labels:
+    hostname: JADEDA1-NE0367
+  targets:
+  - 10.10.80.75
+- labels:
+    hostname: NAWRAN-NE0325
+  targets:
+  - 10.10.80.20
+- labels:
+    hostname: BAKER1-NE0355
+  targets:
+  - 10.10.80.92
+- labels:
+    hostname: AGIDAT1-NE0351
+  targets:
+  - 10.10.80.76
+- labels:
+    hostname: KABAT2-NE0362
+  targets:
+  - 10.10.80.63
+- labels:
+    hostname: AMALA1-NE0499
+  targets:
+  - 10.10.80.51
+- labels:
+    hostname: HURIA2-KK1778
+  targets:
+  - 10.10.80.10
+- labels:
+    hostname: AR3ASR04
+  targets:
+  - 10.10.80.255

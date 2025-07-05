@@ -2,28 +2,80 @@ all:
   children:
     A:
       hosts:
-        router1: null
-        router2: null
-        router3: null
-        router4: null
+        AR3ASR04: null
+    B:
+      hosts:
+        AGIDAT1-NE0351: null
+        ALTHUR1-NE0353: null
+        AMALA1-NE0499: null
+        BAKER1-NE0355: null
+        DAWRBGD-NE0359: null
+        JADEDA1-NE0367: null
+        KABAT2-NE0362: null
+        NAWRAN-NE0325: null
+        SAODIA-NE0533: null
+        SKENIA1-NE0541: null
+    C:
+      hosts:
+        HURIA2-KK1778: null
   hosts:
-    router1:
-      ansible_host: 192.168.127.11
-      ansible_network_os: cisco_ios
+    AGIDAT1-NE0351:
+      ansible_host: 10.10.80.76
+      ansible_network_os: nokia_sros
       ansible_password: admin
       ansible_user: admin
-    router2:
-      ansible_host: 192.168.127.12
-      ansible_network_os: cisco_ios
+    ALTHUR1-NE0353:
+      ansible_host: 10.10.80.74
+      ansible_network_os: nokia_sros
       ansible_password: admin
       ansible_user: admin
-    router3:
-      ansible_host: 192.168.127.13
-      ansible_network_os: cisco_ios
+    AMALA1-NE0499:
+      ansible_host: 10.10.80.51
+      ansible_network_os: nokia_sros
       ansible_password: admin
       ansible_user: admin
-    router4:
-      ansible_host: 192.168.127.15
-      ansible_network_os: cisco_ios
+    AR3ASR04:
+      ansible_host: 10.10.80.255
+      ansible_network_os: cisco_xr
+      ansible_password: admin
+      ansible_user: admin
+    BAKER1-NE0355:
+      ansible_host: 10.10.80.92
+      ansible_network_os: nokia_sros
+      ansible_password: admin
+      ansible_user: admin
+    DAWRBGD-NE0359:
+      ansible_host: 10.10.80.96
+      ansible_network_os: nokia_sros
+      ansible_password: admin
+      ansible_user: admin
+    HURIA2-KK1778:
+      ansible_host: 10.10.80.10
+      ansible_network_os: huawei
+      ansible_password: admin
+      ansible_user: admin
+    JADEDA1-NE0367:
+      ansible_host: 10.10.80.75
+      ansible_network_os: nokia_sros
+      ansible_password: admin
+      ansible_user: admin
+    KABAT2-NE0362:
+      ansible_host: 10.10.80.63
+      ansible_network_os: nokia_sros
+      ansible_password: admin
+      ansible_user: admin
+    NAWRAN-NE0325:
+      ansible_host: 10.10.80.20
+      ansible_network_os: nokia_sros
+      ansible_password: admin
+      ansible_user: admin
+    SAODIA-NE0533:
+      ansible_host: 10.10.80.18
+      ansible_network_os: nokia_sros
+      ansible_password: admin
+      ansible_user: admin
+    SKENIA1-NE0541:
+      ansible_host: 10.10.80.42
+      ansible_network_os: nokia_sros
       ansible_password: admin
       ansible_user: admin
